@@ -127,7 +127,7 @@ class TD3(object):
                     torch.randn_like(action) * self.policy_noise
             ).clamp(-self.noise_clip, self.noise_clip)
             next_action = (
-                    self.actor_target(next_state)[1] + noise
+                    self.actor_target(next_state) + noise
             ).clamp(-self.max_action, self.max_action)
 
 
@@ -248,7 +248,7 @@ class TD3NonStationary(object):
                     torch.randn_like(action) * self.policy_noise
             ).clamp(-self.noise_clip, self.noise_clip)
             next_action = (
-                    self.actor_target(actor_next_state)[1] + noise
+                    self.actor_target(actor_next_state) + noise
             ).clamp(-self.max_action, self.max_action)
 
 
@@ -306,76 +306,7 @@ class TD3NonStationary(object):
 
 
 
-# class TempoRLTLA(TD3NonStationary):
-#     def __init__(
-#             self,
-#             state_dim,
-#             action_dim,
-#             max_action,
-#             discount=0.99,
-#             tau=0.005,
-#             policy_noise=0.2,
-#             noise_clip=0.5,
-#             policy_freq=2,
-#             neurons=[400, 300],
-#             lr=3e-4,
-#             removed_indices = []
-#     ):
-#         super(TempoRLTLA, self).__init__(state_dim, action_dim, max_action,  discount, tau, policy_noise, noise_clip, policy_freq, neurons=neurons, lr=lr, removed_indices=removed_indices)
-#         self.skip_Q = Q(state_dim - len(removed_indices) + action_dim, 2).to(device)
-#         # self.skip_Q_target = copy.deepcopy(self.skip_Q)
-#         self.skip_optimizer = torch.optim.Adam(self.skip_Q.parameters(), lr=lr)
-#
-#     def select_skip(self, state, action):
-#         """
-#         Select the skip action.
-#         Has to be called after select_action
-#         """
-#         state = torch.FloatTensor(self.get_actor_state(state).reshape(1, -1)).to(device)
-#         action = torch.FloatTensor(action.reshape(1, -1)).to(device)
-#         return self.skip_Q(torch.cat([state, action], 1)).cpu().data.numpy().flatten()
-#
-#     def train_skip(self, replay_buffer, batch_size=256):
-#         """
-#         Train the skip network
-#         """
-#         # Sample replay buffer
-#         state, action, skip, next_state, _, reward, not_done = replay_buffer.sample(batch_size)
-#         actor_state = torch.FloatTensor(self.get_actor_state_batch(state)).to(device)
-#         # state = torch.FloatTensor(state).to(device)
-#
-#         actor_next_state = torch.FloatTensor(self.get_actor_state_batch(next_state)).to(device)
-#         next_state = torch.FloatTensor(next_state).to(device)
-#
-#         # Compute the target Q value
-#         target_Q = self.critic_target.Q1(next_state, self.actor_target(actor_next_state))
-#         target_Q = reward + (not_done * self.discount * target_Q).detach()
-#
-#         # Get current Q estimate
-#         current_Q = self.skip_Q(torch.cat([actor_state, action], 1)).gather(1, skip.long())
-#
-#         # Compute critic loss
-#         critic_loss = F.mse_loss(current_Q, target_Q)
-#
-#         # Optimize the critic
-#         self.skip_optimizer.zero_grad()
-#         critic_loss.backward()
-#         self.skip_optimizer.step()
-#
-#     def save(self, filename):
-#         super().save(filename)
-#
-#         torch.save(self.skip_Q.state_dict(), filename + "_skip")
-#         torch.save(self.skip_optimizer.state_dict(), filename + "_skip_optimizer")
-#
-#     def load(self, filename):
-#         super().load(filename)
-#
-#         self.skip_Q.load_state_dict(torch.load(filename + "_skip"))
-#         self.skip_optimizer.load_state_dict(torch.load(filename + "_skip_optimizer"))
-
-
-class TempoRLTLA(TD3):
+class TempoRLTLA(TD3NonStationary):
     def __init__(
             self,
             state_dim,
@@ -388,9 +319,10 @@ class TempoRLTLA(TD3):
             policy_freq=2,
             neurons=[400, 300],
             lr=3e-4,
+            removed_indices = []
     ):
-        super(TempoRLTLA, self).__init__(state_dim, action_dim, max_action, discount, tau, policy_noise, noise_clip, policy_freq, neurons=neurons, lr=lr)
-        self.skip_Q = Q(state_dim + action_dim, 2).to(device)
+        super(TempoRLTLA, self).__init__(state_dim, action_dim, max_action,  discount, tau, policy_noise, noise_clip, policy_freq, neurons=neurons, lr=lr, removed_indices=removed_indices)
+        self.skip_Q = Q(state_dim - len(removed_indices) + action_dim, 2).to(device)
         # self.skip_Q_target = copy.deepcopy(self.skip_Q)
         self.skip_optimizer = torch.optim.Adam(self.skip_Q.parameters(), lr=lr)
 
@@ -399,7 +331,7 @@ class TempoRLTLA(TD3):
         Select the skip action.
         Has to be called after select_action
         """
-        state = torch.FloatTensor(state.reshape(1, -1)).to(device)
+        state = torch.FloatTensor(self.get_actor_state(state).reshape(1, -1)).to(device)
         action = torch.FloatTensor(action.reshape(1, -1)).to(device)
         return self.skip_Q(torch.cat([state, action], 1)).cpu().data.numpy().flatten()
 
@@ -409,15 +341,18 @@ class TempoRLTLA(TD3):
         """
         # Sample replay buffer
         state, action, skip, next_state, _, reward, not_done = replay_buffer.sample(batch_size)
-        state = torch.FloatTensor(state).to(device)
+        actor_state = torch.FloatTensor(self.get_actor_state_batch(state)).to(device)
+        # state = torch.FloatTensor(state).to(device)
+
+        actor_next_state = torch.FloatTensor(self.get_actor_state_batch(next_state)).to(device)
         next_state = torch.FloatTensor(next_state).to(device)
 
         # Compute the target Q value
-        target_Q = self.critic_target.Q1(next_state, self.actor_target(next_state))
+        target_Q = self.critic_target.Q1(next_state, self.actor_target(actor_next_state))
         target_Q = reward + (not_done * self.discount * target_Q).detach()
 
         # Get current Q estimate
-        current_Q = self.skip_Q(torch.cat([state, action], 1)).gather(1, skip.long())
+        current_Q = self.skip_Q(torch.cat([actor_state, action], 1)).gather(1, skip.long())
 
         # Compute critic loss
         critic_loss = F.mse_loss(current_Q, target_Q)
@@ -438,3 +373,5 @@ class TempoRLTLA(TD3):
 
         self.skip_Q.load_state_dict(torch.load(filename + "_skip"))
         self.skip_optimizer.load_state_dict(torch.load(filename + "_skip_optimizer"))
+
+

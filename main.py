@@ -73,8 +73,8 @@ def train(env_name="MountainCarContinuous-v0", seed=0, p=1):
     eval_actions = []
     for l in range(num_layers):
         k = copy.deepcopy(kwargs)
-        k["removed_indices"] = layers['layer'+str(l+1)]
         if l < num_layers - 1:
+            k["removed_indices"] = layers['layer' + str(l + 1)]
             policy = TD3.TempoRLTLA(**k)
         else:
             policy = TD3.TD3(**k)
