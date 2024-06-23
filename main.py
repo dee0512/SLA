@@ -23,7 +23,7 @@ def train(env_name="MountainCarContinuous-v0", seed=0, p=1):
     env_type = hy['type']
     clock_dim = layers["clock_dim"]
     num_layers = layers['layers']
-    augment_type = "sla2"
+    augment_type = "sla"
     arguments = [augment_type, env_name, seed, p]
     file_name = '_'.join([str(x) for x in arguments])
 
