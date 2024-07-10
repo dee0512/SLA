@@ -22,9 +22,16 @@ layers = {
 
     'InvertedPendulum-v2': {
         'layers': 2,
-        'layer1': [2, 3],
+        'layer1': [0, 1],
         'layer2': [],
         'layer3': []
+    },
+
+    'Hopper-v2':{
+        'clock': False,
+        'layers': 2,
+        'layer1': [7, 8, 9, 10],
+        'layer2': []
     }
 }
 

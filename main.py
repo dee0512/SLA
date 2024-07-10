@@ -91,7 +91,7 @@ def train(env_name="MountainCarContinuous-v0", seed=0, p=1):
     episode_reward = 0
     episode_timesteps = 0
     episode_num = 0
-    max_episode_timestep = env.env.env._max_episode_steps
+    max_episode_timestep = 1000
 
     best_performance = -10000
 

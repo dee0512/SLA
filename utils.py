@@ -51,6 +51,19 @@ class ReplayBuffer(object):
             torch.FloatTensor(self.not_done[ind]).to(self.device)
         )
 
+    def sampleLast(self, batch_size):
+        ind = np.random.randint(max(0, self.size-10000), self.size, size=batch_size)
+
+        return (
+            self.state[ind],
+            # torch.FloatTensor(self.state[ind]).to(self.device),
+            torch.FloatTensor(self.action[ind]).to(self.device),
+            self.next_state[ind],
+            # torch.FloatTensor(self.next_state[ind]).to(self.device),
+            torch.FloatTensor(self.reward[ind]).to(self.device),
+            torch.FloatTensor(self.not_done[ind]).to(self.device)
+        )
+
     def save(self, filename):
         with open(filename, 'wb') as file:
             pickle.dump(self, file)

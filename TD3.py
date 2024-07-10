@@ -234,7 +234,6 @@ class TD3NonStationary(object):
 
         # Sample replay buffer
         state, action, next_state, reward, not_done = replay_buffer.sample(batch_size)
-
         actor_state = torch.FloatTensor(self.get_actor_state_batch(state)).to(device)
         state = torch.FloatTensor(state).to(device)
 

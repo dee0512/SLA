@@ -59,10 +59,10 @@ class PrevActionWrapper(gym.Wrapper):
         super().__init__(env)
         ob_space = self.observation_space
         low = ob_space.low
-        low = np.insert(low, -1, axis=0, values=[self.action_space.low[0]])
+        low = np.insert(low, -1, axis=0, values=self.action_space.low[0] * np.ones(self.action_space.shape[0]))
         high = ob_space.high
-        high = np.insert(high, -1, axis=0, values=[self.action_space.high[0]])
-        self.observation_space = gym.spaces.Box(low=low, high=high, shape=(ob_space.shape[0] + 1,))
+        high = np.insert(high, -1, axis=0, values=self.action_space.high[0] * np.ones(self.action_space.shape[0]))
+        self.observation_space = gym.spaces.Box(low=low, high=high, shape=(ob_space.shape[0] + self.action_space.shape[0],))
 
     def step(self, action):
         obs, reward, done, info = super().step(action)
