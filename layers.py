@@ -12,6 +12,14 @@ layers = {
         'layer3': []
     },
 
+    'LunarLanderContinuous-v2':{
+        'clock_dim': 10,
+        'layers': 2,
+        'layer1': [0, 1],
+        'layer2': [],
+        'layer3': []
+    },
+
     'Pendulum-v1':{
         'clock_dim': 10,
         'layers': 3,

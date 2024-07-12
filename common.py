@@ -75,14 +75,10 @@ class PrevActionWrapper(gym.Wrapper):
         return obs
 
 
-def make_env_cc(env_name, seed, env_timestep, decision_wrapper=False, decisions=0, clock_wrapper=False, clock_dim=0, prev_action_wrapper=False):
+def make_env_cc(env_name, seed, clock_wrapper=False, clock_dim=0, prev_action_wrapper=False):
     env = gym.make(env_name)
     env.seed(seed)
     env.action_space.seed(seed)
-    env.dt = env_timestep
-    env.env.dt = env_timestep
-    if decision_wrapper:
-        env = DecisonWrapper(env, decisions)
 
     if clock_wrapper:
         env = ClockWrapper(env, clock_dim)
