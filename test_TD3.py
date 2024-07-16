@@ -32,7 +32,7 @@ for seed in tqdm(range(10)):
     file_name = '_'.join([str(x) for x in arguments])
 
     policy = TD3.TD3(**kwargs)
-    policy.load(f"../models/{file_name}_best")
+    policy.load(f"./models/{file_name}_best")
 
     for i in range(21):
         env = make_env(env_name, seed + 100, clock_wrapper=layers['clock'], clock_dim=layers['clock_dim'],
