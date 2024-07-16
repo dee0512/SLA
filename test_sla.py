@@ -37,7 +37,7 @@ for seed in tqdm(range(10)):
             policy = TD3.TempoRLTLA(**k)
         else:
             policy = TD3.TD3(**k)
-        policy.load(f"../models/{file_name}_l{l+1}_layer_best")
+        policy.load(f"./models/{file_name}_l{l+1}_layer_best")
         policies.append(policy)
 
     for i in range(21):
