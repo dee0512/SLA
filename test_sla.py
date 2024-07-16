@@ -5,7 +5,7 @@ from tqdm import tqdm
 from layers import get_layers
 import TD3
 from hyperparameters import get_hyperparameters
-from common import make_env
+from common import make_env, make_env_cc
 
 env_name = "LunarLanderContinuous-v2"
 layers = get_layers(env_name)
