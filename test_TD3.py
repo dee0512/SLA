@@ -35,7 +35,7 @@ for seed in tqdm(range(10)):
     policy.load(f"./models/{file_name}_best")
 
     for i in range(21):
-        env = make_env(env_name, seed + 100, clock_wrapper=layers['clock'], clock_dim=layers['clock_dim'],
+        env = make_env_cc(env_name, seed + 100, clock_wrapper=layers['clock'], clock_dim=layers['clock_dim'],
                        prev_action_wrapper=layers['previous_action'])
         noise = i * 0.05
         eval_reward = 0
