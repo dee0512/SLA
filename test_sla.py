@@ -53,7 +53,7 @@ for seed in tqdm(range(10)):
                 if np.random.random() < noise:
                     # removed_dim = np.random.randint(2)
                     # if removed_dim == 0:
-                    removed_dim = -1
+                    removed_dim = 0
                     # eval_state[0] = 0
                     # else:
                     eval_state[0:2] = 0
@@ -70,4 +70,4 @@ for seed in tqdm(range(10)):
         dfall.loc[len(dfall)] = [seed, noise, avg_reward]
 
 dfsla = dfall
-dfsla.to_csv('velpos_df2.csv')
+dfsla.to_csv('velpos_dfsla.csv')
