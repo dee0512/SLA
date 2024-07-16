@@ -5,14 +5,14 @@ from tqdm import tqdm
 from layers import get_layers
 import TD3
 from hyperparameters import get_hyperparameters
-from common import make_env
+from common import make_env_cc
 
-env_name = "InvertedPendulum-v2"
+env_name = "LunarLanderContinuous-v2"
 layers = get_layers(env_name)
 num_layers = layers['layers']
 hy = get_hyperparameters(env_name)
 timestep = hy['timestep']
-env = make_env(env_name, 0, clock_wrapper=layers['clock'], clock_dim=layers['clock_dim'],
+env = make_env_cc(env_name, 0, clock_wrapper=layers['clock'], clock_dim=layers['clock_dim'],
                prev_action_wrapper=layers['previous_action'])
 state_dim = env.observation_space.shape[0]
 action_dim = env.action_space.shape[0]
@@ -62,4 +62,4 @@ for seed in tqdm(range(10)):
         dfall.loc[len(dfall)] = [seed, noise, avg_reward]
 
 dfsla = dfall
-dfsla.to_csv('velpos_dftd3.csv')
+dfsla.to_csv('ll_velpos_dftd3.csv')
