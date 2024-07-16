@@ -41,8 +41,7 @@ def train(env_name="MountainCarContinuous-v0", seed=0):
     if env_type == 'mujoco':
         env = make_env(env_name, seed, clock_wrapper=layers['clock'], clock_dim=clock_dim, prev_action_wrapper=layers['previous_action'])
     else:
-        timestep = default_timestep
-        env = make_env_cc(env_name, seed, timestep, clock_wrapper=layers['clock'], clock_dim=clock_dim,
+        env = make_env_cc(env_name, seed, clock_wrapper=layers['clock'], clock_dim=clock_dim,
                           prev_action_wrapper=layers['previous_action'])
 
     # Set seeds
@@ -115,7 +114,7 @@ def train(env_name="MountainCarContinuous-v0", seed=0):
             if env_type == 'mujoco':
                 eval_env = make_env(env_name, seed + 100, clock_wrapper=layers['clock'], clock_dim=clock_dim, prev_action_wrapper=layers['previous_action'])
             else:
-                eval_env = make_env_cc(env_name,  seed + 100, timestep, clock_wrapper=layers['clock'], clock_dim=clock_dim, prev_action_wrapper=layers['previous_action'])
+                eval_env = make_env_cc(env_name,  seed + 100, clock_wrapper=layers['clock'], clock_dim=clock_dim, prev_action_wrapper=layers['previous_action'])
             task_reward = 0
             for _ in range(10):
                 eval_state, eval_done = eval_env.reset(), False
